@@ -1,0 +1,187 @@
+# OpenSpec Platform Definition: Grasshopper 1 for Rhino 8
+# Spec-driven development requirements for GH1 plugin development
+
+metadata:
+  platform: grasshopper1
+  display_name: Grasshopper 1 (Rhino 8)
+  version: "1.0.0"
+  description: |
+    Grasshopper 1 is the visual programming environment bundled with Rhino.
+    This spec defines requirements for GH1 component development targeting Rhino 8.
+
+# Runtime Environment
+runtime:
+  host_application: Rhino 8
+  framework: net48
+  clr_version: "4.0"
+  architecture:
+    - x64
+  os:
+    - windows
+
+# SDK Dependencies
+dependencies:
+  required:
+    - name: Grasshopper
+      version: ">=8.0.23304.9001"
+      source: nuget
+      notes: "Includes RhinoCommon as transitive dependency"
+
+  optional:
+    - name: RhinoWindows
+      version: ">=8.0.23304.9001"
+      source: nuget
+      notes: "For Windows Forms integration"
+
+    - name: Eto.Forms
+      version: ">=2.8.0"
+      source: nuget
+      notes: "Cross-platform UI framework used by Rhino"
+
+# Project Structure
+project_structure:
+  type: sdk-style
+  target_framework: net48
+
+  required_files:
+    - path: "*.csproj"
+      description: "SDK-style project file"
+
+    - path: "*Info.cs"
+      description: "GH_AssemblyInfo implementation"
+      must_implement: "Grasshopper.Kernel.GH_AssemblyInfo"
+
+    - path: "Properties/AssemblyInfo.cs"
+      description: "Assembly metadata attributes"
+
+  recommended_structure:
+    - path: "Components/"
+      description: "GH_Component implementations"
+
+    - path: "Parameters/"
+      description: "Custom GH_Param implementations"
+
+    - path: "Resources/"
+      description: "Embedded icons and assets"
+
+    - path: "Types/"
+      description: "Custom Grasshopper types (GH_Goo)"
+
+# Component Development Rules
+component_rules:
+  base_class: "Grasshopper.Kernel.GH_Component"
+
+  required_overrides:
+    - name: "RegisterInputParams"
+      signature: "protected override void RegisterInputParams(GH_InputParamManager pManager)"
+
+    - name: "RegisterOutputParams"
+      signature: "protected override void RegisterOutputParams(GH_OutputParamManager pManager)"
+
+    - name: "SolveInstance"
+      signature: "protected override void SolveInstance(IGH_DataAccess DA)"
+
+    - name: "ComponentGuid"
+      type: "property"
+      notes: "Must be unique, never change after release"
+
+  icon_requirements:
+    size: "24x24"
+    formats:
+      - png
+      - bmp
+    build_action: "EmbeddedResource"
+
+# Build Configuration
+build:
+  debug:
+    output_path: "$(APPDATA)\\Grasshopper\\Libraries\\$PluginName$\\"
+    notes: "Auto-deploys for testing"
+
+  release:
+    output_path: "bin\\Release\\"
+
+  critical_settings:
+    - key: "CopyLocalLockFileAssemblies"
+      value: "false"
+      reason: "Prevent copying Rhino assemblies to output"
+
+    - key: "ExcludeAssets"
+      value: "runtime"
+      applies_to: "Grasshopper package reference"
+      reason: "Use Rhino's runtime assemblies"
+
+# Naming Conventions
+conventions:
+  namespaces:
+    pattern: "$CompanyName$.$PluginName$"
+    example: "Acme.GeometryTools"
+
+  components:
+    class_suffix: "Component"
+    example: "ScaleGeometryComponent"
+
+  parameters:
+    class_suffix: "Param"
+    example: "CustomCurveParam"
+
+  guids:
+    format: "lowercase-hyphenated"
+    example: "12345678-1234-1234-1234-123456789abc"
+    rules:
+      - "Never change ComponentGuid after initial release"
+      - "Generate unique GUIDs for each component"
+      - "Use separate GUIDs for plugin, assembly, and components"
+
+# Testing Guidelines
+testing:
+  manual:
+    steps:
+      - "Build in Debug mode"
+      - "Launch Rhino 8"
+      - "Open Grasshopper"
+      - "Find component in specified Category/Subcategory"
+      - "Test with various inputs"
+
+  debugging:
+    method: "Attach to Process"
+    target: "Rhino.exe"
+    ide_support:
+      - Visual Studio 2022
+      - JetBrains Rider
+
+# Distribution
+distribution:
+  methods:
+    - name: "Food4Rhino"
+      url: "https://www.food4rhino.com/"
+      notes: "Community plugin marketplace"
+
+    - name: "Yak Package Manager"
+      command: "yak push"
+      notes: "Official Rhino package manager"
+
+    - name: "Direct Download"
+      format: ".zip or .gha"
+
+# Common Pitfalls
+pitfalls:
+  - issue: "ComponentGuid collision"
+    solution: "Always generate new unique GUIDs"
+
+  - issue: "Missing GH_AssemblyInfo"
+    solution: "Create class inheriting GH_AssemblyInfo"
+
+  - issue: "DLL not loading"
+    solution: "Check target framework is net48, verify assembly references"
+
+  - issue: "Component not appearing"
+    solution: "Verify GH_Exposure is not hidden, check Category/Subcategory"
+
+  - issue: "Runtime assembly conflicts"
+    solution: "Set ExcludeAssets=runtime on package references"
+
+# Related Specs
+related_specs:
+  - grasshopper2
+  - rhino-plugin

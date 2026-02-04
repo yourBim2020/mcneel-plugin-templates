@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>false</ImplicitUsings>
+
+    <!-- Assembly Information -->
+    <AssemblyName>$PluginName$</AssemblyName>
+    <RootNamespace>$PluginName$</RootNamespace>
+    <Version>$Version$</Version>
+    <AssemblyVersion>$Version$</AssemblyVersion>
+    <FileVersion>$Version$</FileVersion>
+    <Authors>$AuthorName$</Authors>
+    <Company>$CompanyName$</Company>
+    <Description>$PluginDescription$</Description>
+    <Copyright>Copyright © $CompanyName$ $Year$</Copyright>
+
+    <!-- Build Configuration -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+
+    <!-- Debug: Copy to Grasshopper Components folder -->
+    <OutputPath Condition="'$(Configuration)' == 'Debug'">$(APPDATA)\Grasshopper\Libraries\$PluginName$\</OutputPath>
+    <OutputPath Condition="'$(Configuration)' == 'Release'">bin\Release\</OutputPath>
+  </PropertyGroup>
+
+  <!-- Rhino 8 SDK References -->
+  <ItemGroup>
+    <PackageReference Include="Grasshopper" Version="8.0.23304.9001" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <!-- Embedded Resources -->
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\**\*" />
+  </ItemGroup>
+
+  <!-- Exclude runtime assemblies from output -->
+  <PropertyGroup>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+</Project>
