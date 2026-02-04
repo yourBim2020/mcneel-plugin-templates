@@ -14,20 +14,15 @@ This guide walks you through setting up your development environment and creatin
    - Visual Studio: Install ".NET desktop development" workload
    - Include ".NET Framework 4.8 SDK" component
 
-3. **Python 3.8+** - For the scaffolding tool
-   - Download from [python.org](https://www.python.org/downloads/)
-
-4. **.NET SDKs**
+3. **.NET SDKs**
+   - .NET 8.0 SDK (for scaffolding tool)
    - .NET Framework 4.8 SDK (for Grasshopper 1)
    - .NET 7 SDK (for Grasshopper 2 / Rhino plugins)
 
 ### Verify Installation
 
 ```bash
-# Check Python
-python --version
-
-# Check .NET
+# Check .NET SDKs
 dotnet --list-sdks
 ```
 
@@ -37,7 +32,7 @@ dotnet --list-sdks
 
 ```bash
 cd mcneel-plugin-templates
-python scripts/scaffold.py grasshopper1 MyFirstPlugin
+dotnet run --project tools/Scaffolder -- new grasshopper1 MyFirstPlugin
 ```
 
 You'll be prompted for:

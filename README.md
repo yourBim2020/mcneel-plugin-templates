@@ -16,10 +16,10 @@ A multi-platform template repository for developing plugins across the McNeel ec
 
 ### Prerequisites
 
-- Python 3.8+ (for scaffolding)
+- .NET 8.0 SDK (for scaffolding tool)
 - Visual Studio 2022 or JetBrains Rider
 - Rhino 8 installed
-- .NET Framework 4.8 SDK (for GH1)
+- .NET Framework 4.8 SDK (for GH1 plugins)
 
 ### Create a New Plugin
 
@@ -28,17 +28,36 @@ A multi-platform template repository for developing plugins across the McNeel ec
 git clone https://github.com/yourBim2020/mcneel-plugin-templates.git
 cd mcneel-plugin-templates
 
-# Scaffold a new Grasshopper 1 plugin
-python scripts/scaffold.py grasshopper1 MyAwesomePlugin
+# Scaffold a new Grasshopper 1 plugin (interactive)
+dotnet run --project tools/Scaffolder -- new grasshopper1 MyAwesomePlugin
 
 # Or use non-interactive mode with defaults
-python scripts/scaffold.py grasshopper1 MyPlugin --non-interactive
+dotnet run --project tools/Scaffolder -- new grasshopper1 MyPlugin --interactive false
+
+# Specify output directory
+dotnet run --project tools/Scaffolder -- new grasshopper1 MyPlugin --output ./projects
 ```
 
-### List Available Templates
+### Scaffolder Commands
 
 ```bash
-python scripts/scaffold.py --list
+# List available templates
+dotnet run --project tools/Scaffolder -- list
+
+# Show template info (reads OpenSpec YAML)
+dotnet run --project tools/Scaffolder -- info grasshopper1
+
+# Get help
+dotnet run --project tools/Scaffolder -- --help
+```
+
+### Build a Standalone Executable
+
+```bash
+cd tools/Scaffolder
+dotnet publish -c Release -r win-x64 --self-contained
+
+# Executable will be in bin/Release/net8.0/win-x64/publish/scaffolder.exe
 ```
 
 ## Repository Structure
@@ -55,8 +74,8 @@ mcneel-plugin-templates/
 │   └── grasshopper1.yaml      # GH1 platform requirements
 ├── docs/                       # Documentation
 │   └── getting-started.md     # Setup and usage guide
-└── scripts/                    # Tooling
-    └── scaffold.py            # Project scaffolding utility
+└── tools/
+    └── Scaffolder/             # C# scaffolding CLI tool
 ```
 
 ## Template Placeholders
@@ -78,7 +97,14 @@ See individual template READMEs for full placeholder lists.
 
 ## Spec-Driven Development
 
-This repository includes [OpenSpec](https://github.com/Fission-AI/OpenSpec) definitions for each platform. Use them with AI coding assistants for guided, consistent development:
+This repository includes [OpenSpec](https://github.com/Fission-AI/OpenSpec) definitions for each platform. The scaffolder reads these specs to provide platform information:
+
+```bash
+# View platform requirements from spec
+dotnet run --project tools/Scaffolder -- info grasshopper1
+```
+
+Use with AI coding assistants for guided, consistent development:
 
 ```bash
 # Initialize OpenSpec in your project
@@ -104,8 +130,7 @@ Contributions welcome! To add a new template:
 1. Create a directory in `templates/`
 2. Add template files with `$PLACEHOLDER$` variables
 3. Create a corresponding spec in `specs/`
-4. Update the scaffolding script if needed
-5. Submit a pull request
+4. Submit a pull request
 
 ## Resources
 
