@@ -7,7 +7,7 @@ A multi-platform template repository for developing plugins across the McNeel ec
 | Platform | Status | Target Framework | Description |
 |----------|--------|------------------|-------------|
 | **Grasshopper 1** | Ready | .NET 4.8 | Visual programming components for Rhino 8 |
-| Grasshopper 2 | Planned | .NET 7 | Next-gen Grasshopper (Rhino 8+) |
+| **Grasshopper 2** | Ready | .NET 7 | Next-gen Grasshopper components (Rhino 8/9) |
 | Rhino Plugin | Planned | .NET 7 | Native Rhino commands and features |
 | Rhino.Inside Revit | Planned | .NET 4.8 | Rhino geometry in Autodesk Revit |
 | Rhino.Inside AutoCAD | Planned | .NET 4.8 | Rhino geometry in AutoCAD |
@@ -20,6 +20,7 @@ A multi-platform template repository for developing plugins across the McNeel ec
 - Visual Studio 2022 or JetBrains Rider
 - Rhino 8 installed
 - .NET Framework 4.8 SDK (for GH1 plugins)
+- .NET 7 SDK (for GH2 plugins)
 
 ### Create a New Plugin
 
@@ -30,6 +31,9 @@ cd mcneel-plugin-templates
 
 # Scaffold a new Grasshopper 1 plugin (interactive)
 dotnet run --project tools/Scaffolder -- new grasshopper1 MyAwesomePlugin
+
+# Scaffold a new Grasshopper 2 plugin
+dotnet run --project tools/Scaffolder -- new grasshopper2 MyGH2Plugin
 
 # Or use non-interactive mode with defaults
 dotnet run --project tools/Scaffolder -- new grasshopper1 MyPlugin --interactive false
@@ -66,12 +70,13 @@ dotnet publish -c Release -r win-x64 --self-contained
 mcneel-plugin-templates/
 ├── templates/                  # Plugin templates
 │   ├── grasshopper1/          # Grasshopper 1 (Rhino 8)
-│   ├── grasshopper2/          # Grasshopper 2 (planned)
+│   ├── grasshopper2/          # Grasshopper 2 (Rhino 8/9)
 │   ├── rhino-plugin/          # Rhino commands (planned)
 │   ├── rhino-inside-revit/    # Rhino.Inside Revit (planned)
 │   └── rhino-inside-autocad/  # Rhino.Inside AutoCAD (planned)
 ├── specs/                      # OpenSpec YAML definitions
-│   └── grasshopper1.yaml      # GH1 platform requirements
+│   ├── grasshopper1.yaml      # GH1 platform requirements
+│   └── grasshopper2.yaml      # GH2 platform requirements
 ├── docs/                       # Documentation
 │   └── getting-started.md     # Setup and usage guide
 └── tools/

@@ -1,0 +1,244 @@
+# OpenSpec Platform Definition: Grasshopper 2 for Rhino 8/9
+# Spec-driven development requirements for GH2 plugin development
+
+metadata:
+  platform: grasshopper2
+  display_name: Grasshopper 2 (Rhino 8/9)
+  version: "1.0.0"
+  description: |
+    Grasshopper 2 is the next-generation visual programming environment for Rhino.
+    It runs on .NET 7, uses a new component API, and outputs .rhp plugin files.
+    Currently in alpha, available for Rhino 8 (netcore mode) and Rhino 9 WIP.
+
+# Runtime Environment
+runtime:
+  host_application: Rhino 8/9
+  framework: net7.0
+  clr_version: "7.0"
+  architecture:
+    - x64
+  os:
+    - windows
+    - macos
+
+# SDK Dependencies
+dependencies:
+  required:
+    - name: Grasshopper2
+      version: ">=2.0.9225-wip.14825"
+      source: nuget
+      notes: "Grasshopper 2 SDK (WIP/alpha)"
+
+    - name: RhinoCommon
+      version: ">=8.17.25066.7001"
+      source: nuget
+      notes: "Rhino geometry and SDK"
+
+  optional:
+    - name: Eto.Forms
+      version: ">=2.8.0"
+      source: nuget
+      notes: "Cross-platform UI framework used by Rhino"
+
+# Project Structure
+project_structure:
+  type: sdk-style
+  target_framework: net7.0
+  output_extension: ".rhp"
+
+  required_files:
+    - path: "*.csproj"
+      description: "SDK-style project file targeting net7.0 with .rhp output"
+
+    - path: "*Plugin.cs"
+      description: "Plugin entry point"
+      must_implement: "Grasshopper2.Framework.Plugin"
+
+  recommended_structure:
+    - path: "Nodes/"
+      description: "Component implementations (Grasshopper2.Components.Component)"
+
+    - path: "Icons/"
+      description: "Grasshopper icon assets (.ghicon files)"
+
+    - path: "Properties/"
+      description: "Launch settings for debugging"
+
+# Component Development Rules
+component_rules:
+  base_class: "Grasshopper2.Components.Component"
+
+  required_attributes:
+    - name: "IoId"
+      namespace: "GrasshopperIO"
+      notes: "Unique GUID attribute applied to the component class"
+
+  required_overrides:
+    - name: "AddInputs"
+      signature: "protected override void AddInputs(InputAdder inputs)"
+      notes: "Define component inputs using InputAdder"
+
+    - name: "AddOutputs"
+      signature: "protected override void AddOutputs(OutputAdder outputs)"
+      notes: "Define component outputs using OutputAdder"
+
+    - name: "Process"
+      signature: "protected override void Process(IDataAccess access)"
+      notes: "Component logic — replaces SolveInstance from GH1"
+
+  required_constructors:
+    - name: "Default"
+      signature: "public ComponentName() : base(new Nomen(...))"
+      notes: "Nomen takes (name, description, pluginTab, category)"
+
+    - name: "Deserialization"
+      signature: "public ComponentName(IReader reader) : base(reader)"
+      notes: "Required for file deserialization"
+
+  data_access_patterns:
+    item:
+      get: "access.GetItem(index, out T value)"
+      set: "access.SetItem(index, value)"
+    twig:
+      get: "access.GetTwig<T>(index, out Twig<T> values)"
+      set: "access.SetTwig(index, Garden.TwigFromList(values))"
+    tree:
+      get: "access.GetTree<T>(index, out Tree<T> values)"
+      set: "access.SetTree(index, Garden.TreeFromArrays(arrays))"
+
+  icon_requirements:
+    format: ".ghicon"
+    build_action: "EmbeddedResource"
+    notes: "Grasshopper 2 uses .ghicon format, embedded via csproj glob"
+
+# Plugin Entry Point
+plugin_rules:
+  base_class: "Grasshopper2.Framework.Plugin"
+
+  constructor:
+    parameters:
+      - name: "id"
+        type: "Guid"
+        notes: "Unique plugin identifier"
+      - name: "nomen"
+        type: "Nomen"
+        notes: "Plugin name and description"
+      - name: "version"
+        type: "Version"
+        notes: "Plugin version"
+
+  required_overrides:
+    - name: "Author"
+      type: "property"
+      signature: "public override string Author { get; }"
+
+# Build Configuration
+build:
+  output:
+    extension: ".rhp"
+    path: "../bin/"
+
+  critical_settings:
+    - key: "CopyLocalLockFileAssemblies"
+      value: "true"
+      reason: "GH2 requires assemblies to be copied to output (unlike GH1)"
+
+    - key: "TargetExt"
+      value: ".rhp"
+      reason: "Rhino plugin format"
+
+    - key: "ImplicitUsings"
+      value: "disable"
+      reason: "Explicit imports required for clarity"
+
+  debug:
+    method: "Launch profiles"
+    rhino8:
+      executable: "C:\\Program Files\\Rhino 8\\System\\Rhino.exe"
+      arguments: "/netcore"
+      environment:
+        RHINO_PACKAGE_DIRS: "$(SolutionDir)bin\\"
+    rhino9:
+      executable: "C:\\Program Files\\Rhino 9 WIP\\System\\Rhino.exe"
+      arguments: "/netcore"
+      environment:
+        RHINO_PACKAGE_DIRS: "$(SolutionDir)bin\\"
+
+# Naming Conventions
+conventions:
+  namespaces:
+    pattern: "$PluginName$"
+    example: "GeometryTools"
+
+  components:
+    class_suffix: "Component"
+    example: "OffsetSurfaceComponent"
+
+  plugins:
+    class_suffix: "Plugin"
+    example: "GeometryToolsPlugin"
+
+  guids:
+    format: "lowercase-hyphenated"
+    example: "12345678-1234-1234-1234-123456789abc"
+    rules:
+      - "Never change IoId GUID after initial release"
+      - "Generate unique GUIDs for each component"
+      - "Use separate GUIDs for plugin and components"
+      - "Use https://guidgenerator.com/ for new GUIDs"
+
+# Testing Guidelines
+testing:
+  manual:
+    steps:
+      - "Build the project"
+      - "Launch Rhino 8 with /netcore flag or Rhino 9 WIP"
+      - "Open Grasshopper (type 'Grasshopper' in command line)"
+      - "Find component under the specified Plugin Tab / Category"
+      - "Test with various inputs"
+
+  debugging:
+    method: "Launch profiles with RHINO_PACKAGE_DIRS"
+    ide_support:
+      - Visual Studio 2022
+      - JetBrains Rider
+    notes: "Use launch profiles in Properties/launchSettings.json"
+
+# Distribution
+distribution:
+  methods:
+    - name: "Yak Package Manager"
+      command: "yak push"
+      notes: "Official Rhino package manager — preferred for GH2"
+
+    - name: "Direct Download"
+      format: ".rhp"
+      notes: "Copy .rhp and dependencies to Rhino package directory"
+
+# Common Pitfalls
+pitfalls:
+  - issue: "Missing IReader constructor"
+    solution: "Always include deserialization constructor: public Component(IReader reader) : base(reader) { }"
+
+  - issue: "IoId GUID collision"
+    solution: "Always generate new unique GUIDs for each component"
+
+  - issue: "Plugin not loading in Rhino 8"
+    solution: "Must launch Rhino 8 with /netcore flag for .NET 7 plugins"
+
+  - issue: "Missing assemblies at runtime"
+    solution: "Ensure CopyLocalLockFileAssemblies is true in .csproj"
+
+  - issue: "Component not appearing in Grasshopper"
+    solution: "Check RHINO_PACKAGE_DIRS environment variable points to build output"
+
+  - issue: "Confusing GH1 and GH2 APIs"
+    solution: "GH2 uses Component (not GH_Component), Process (not SolveInstance), IDataAccess (not IGH_DataAccess)"
+
+  - issue: "Data access patterns"
+    solution: "Use GetItem/SetItem for singles, GetTwig/SetTwig for lists, GetTree/SetTree for trees"
+
+# Related Specs
+related_specs:
+  - grasshopper1
+  - rhino-plugin

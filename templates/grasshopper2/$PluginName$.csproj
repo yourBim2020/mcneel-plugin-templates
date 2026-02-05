@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+
+    <!-- Assembly Information -->
+    <AssemblyName>$PluginName$</AssemblyName>
+    <RootNamespace>$PluginName$</RootNamespace>
+    <Version>$Version$</Version>
+    <Authors>$AuthorName$</Authors>
+    <Company>$CompanyName$</Company>
+    <Description>$PluginDescription$</Description>
+    <Copyright>Copyright $CompanyName$ $Year$</Copyright>
+
+    <!-- Build Configuration -->
+    <TargetExt>.rhp</TargetExt>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <OutputPath>..\bin\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <NoWarn>$(NoWarn);NU1701</NoWarn>
+  </PropertyGroup>
+
+  <!-- Grasshopper 2 SDK References -->
+  <ItemGroup>
+    <PackageReference Include="Grasshopper2" Version="2.0.9225-wip.14825" />
+    <PackageReference Include="RhinoCommon" Version="8.17.25066.7001" />
+  </ItemGroup>
+
+  <!-- Embedded Resources (Icons) -->
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\**\*.ghicon" />
+  </ItemGroup>
+
+  <!-- Debug launch configuration -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <StartProgram>C:\Program Files\Rhino 8\System\Rhino.exe</StartProgram>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
+
+</Project>

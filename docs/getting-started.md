@@ -26,7 +26,7 @@ This guide walks you through setting up your development environment and creatin
 dotnet --list-sdks
 ```
 
-## Creating Your First Grasshopper Plugin
+## Creating Your First Grasshopper 1 Plugin
 
 ### Step 1: Scaffold the Project
 
@@ -58,7 +58,73 @@ Build the project in **Debug** mode. The DLL will be automatically copied to:
 3. Find your component under the category you specified
 4. Drop it on the canvas and test!
 
-## Understanding the Template Structure
+## Creating Your First Grasshopper 2 Plugin
+
+### Step 1: Scaffold the Project
+
+```bash
+cd mcneel-plugin-templates
+dotnet run --project tools/Scaffolder -- new grasshopper2 MyGH2Plugin
+```
+
+### Step 2: Open in Your IDE
+
+Open `MyGH2Plugin/MyGH2Plugin.csproj` in Visual Studio or Rider.
+
+### Step 3: Build
+
+Build the project. The output is a `.rhp` file in the `bin/` directory.
+
+### Step 4: Test in Grasshopper 2
+
+1. Launch **Rhino 8** with the `/netcore` flag, or launch **Rhino 9 WIP**
+2. Use the launch profiles in `Properties/launchSettings.json` for automatic setup
+3. The `RHINO_PACKAGE_DIRS` environment variable tells Rhino where to find your plugin
+4. Open Grasshopper and find your component under the plugin tab
+
+### GH2 Template Structure
+
+```
+MyGH2Plugin/
+├── MyGH2Plugin.csproj              # .NET 7 project file (.rhp output)
+├── MyGH2PluginPlugin.cs            # Plugin entry point
+├── Nodes/
+│   └── MyGH2PluginComponent.cs     # Sample component
+├── Icons/                           # .ghicon icon assets
+└── Properties/
+    └── launchSettings.json          # Rhino 8/9 debug profiles
+```
+
+### GH2 Component Example
+
+```csharp
+[IoId("unique-guid-here")]
+public sealed class MyComponent : Component
+{
+    public MyComponent()
+    : base(new Nomen("My Component", "Description", "MyPlugin", "Category")) { }
+
+    public MyComponent(IReader reader) : base(reader) { }
+
+    protected override void AddInputs(InputAdder inputs)
+    {
+        inputs.AddNumber("Value", "V", "A numeric input.").Set(1.0);
+    }
+
+    protected override void AddOutputs(OutputAdder outputs)
+    {
+        outputs.AddNumber("Result", "R", "The result.", Access.Item);
+    }
+
+    protected override void Process(IDataAccess access)
+    {
+        access.GetItem(0, out double value);
+        access.SetItem(0, value * 2);
+    }
+}
+```
+
+## Understanding the GH1 Template Structure
 
 ```
 MyFirstPlugin/
@@ -197,6 +263,8 @@ yak push
 |---------|---------------|---------------|--------------|
 | Framework | .NET 4.8 | .NET 7 | .NET 7 |
 | UI | Component-based | Component-based | Commands |
-| Entry Point | GH_Component | GH_Component | Rhino.PlugIns.PlugIn |
-| Distribution | GHA/Yak | Yak | RHP/Yak |
-| Rhino Version | 7/8 | 8+ | 8+ |
+| Plugin Entry | `GH_AssemblyInfo` | `Grasshopper2.Framework.Plugin` | `Rhino.PlugIns.PlugIn` |
+| Component Base | `GH_Component` | `Grasshopper2.Components.Component` | N/A |
+| Output | `.gha` | `.rhp` | `.rhp` |
+| Distribution | GHA/Yak | RHP/Yak | RHP/Yak |
+| Rhino Version | 7/8 | 8+ (netcore) | 8+ |
