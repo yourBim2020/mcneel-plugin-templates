@@ -1,0 +1,276 @@
+# OpenSpec Platform Definition: Rhino Plugin for Rhino 8
+# Spec-driven development requirements for Rhino plugin development
+
+metadata:
+  platform: rhino
+  display_name: Rhino Plugin (Rhino 8)
+  version: "1.0.0"
+  description: |
+    Native Rhino plugins extend Rhino with custom commands, features, and tools.
+    They run on .NET 7, use the RhinoCommon SDK, and output .rhp plugin files.
+    Commands are automatically discovered by Rhino through reflection.
+
+# Runtime Environment
+runtime:
+  host_application: Rhino 8
+  framework: net7.0
+  clr_version: "7.0"
+  architecture:
+    - x64
+  os:
+    - windows
+    - macos
+
+# SDK Dependencies
+dependencies:
+  required:
+    - name: RhinoCommon
+      version: ">=8.0.23304.9001"
+      source: nuget
+      notes: "Rhino SDK — ExcludeAssets=runtime because Rhino provides it at runtime"
+
+  optional:
+    - name: Eto.Forms
+      version: ">=2.8.0"
+      source: nuget
+      notes: "Cross-platform UI framework used by Rhino"
+
+    - name: Rhino.UI
+      version: ">=8.0.23304.9001"
+      source: nuget
+      notes: "Rhino UI components (panels, pages, dialogs)"
+
+# Project Structure
+project_structure:
+  type: sdk-style
+  target_framework: net7.0
+  output_extension: ".rhp"
+
+  required_files:
+    - path: "*.csproj"
+      description: "SDK-style project file targeting net7.0 with .rhp output"
+
+    - path: "*Plugin.cs"
+      description: "Plugin entry point"
+      must_implement: "Rhino.PlugIns.PlugIn"
+
+    - path: "Properties/AssemblyInfo.cs"
+      description: "Plugin metadata with PlugInDescription attributes and plugin GUID"
+
+  recommended_structure:
+    - path: "EmbeddedResources/"
+      description: "Plugin icon (.ico) and other embedded resources"
+
+    - path: "Properties/launchSettings.json"
+      description: "Debug launch profiles for Rhino 8"
+
+# Plugin Entry Point
+plugin_rules:
+  base_class: "Rhino.PlugIns.PlugIn"
+
+  notes: |
+    Every RhinoCommon .rhp assembly must have exactly one PlugIn-derived class.
+    Rhino manages instantiation — do not create instances yourself.
+    Use a static Instance property for singleton access.
+
+  required_pattern:
+    - name: "Singleton"
+      description: "Store Instance in constructor, expose via static property"
+      example: |
+        public class MyPlugin : Rhino.PlugIns.PlugIn
+        {
+            public MyPlugin() { Instance = this; }
+            public static MyPlugin Instance { get; private set; }
+        }
+
+  optional_overrides:
+    - name: "OnLoad"
+      description: "Called when the plug-in is loaded"
+
+    - name: "OnShutdown"
+      description: "Called when the plug-in is unloaded"
+
+    - name: "OptionsDialogPages"
+      description: "Add pages to the Rhino Options dialog"
+
+    - name: "DocumentPropertiesDialogPages"
+      description: "Add pages to Document Properties dialog"
+
+# Command Development Rules
+command_rules:
+  base_class: "Rhino.Commands.Command"
+
+  notes: |
+    Commands are automatically discovered by Rhino through reflection.
+    Each command class must have a parameterless constructor.
+    Rhino creates one instance per command class.
+
+  required_overrides:
+    - name: "EnglishName"
+      type: "property"
+      signature: "public override string EnglishName { get; }"
+      notes: "The command name as it appears on the Rhino command line"
+
+    - name: "RunCommand"
+      type: "method"
+      signature: "protected override Result RunCommand(RhinoDoc doc, RunMode mode)"
+      notes: "The command execution logic — return Result.Success, Result.Failure, or Result.Cancel"
+
+  optional_overrides:
+    - name: "UndoCommand"
+      description: "Called when the user undoes the command"
+
+  user_input_classes:
+    - name: "GetPoint"
+      description: "Interactive point selection with optional dynamic drawing"
+    - name: "GetObject"
+      description: "Interactive object selection with filters"
+    - name: "GetString"
+      description: "String input from command line"
+    - name: "GetNumber"
+      description: "Numeric input from command line"
+    - name: "GetOption"
+      description: "Option selection from command line"
+
+  user_input_pattern:
+    description: "Standard pattern for interactive input"
+    example: |
+      using (GetPoint gp = new GetPoint())
+      {
+          gp.SetCommandPrompt("Pick a point");
+          if (gp.Get() != GetResult.Point) return gp.CommandResult();
+          Point3d pt = gp.Point();
+      }
+
+# Assembly Metadata
+assembly_info:
+  description: "Plugin metadata defined via PlugInDescription assembly attributes in AssemblyInfo.cs"
+
+  required:
+    - name: "Guid"
+      attribute: "[assembly: Guid(\"...\")]"
+      notes: "Unique plugin identifier — also used as COM typelib ID"
+
+  optional_attributes:
+    - type: "DescriptionType.Icon"
+      notes: "Embedded .ico resource path: Namespace.Folder.filename.ico"
+    - type: "DescriptionType.Email"
+    - type: "DescriptionType.Organization"
+    - type: "DescriptionType.WebSite"
+    - type: "DescriptionType.UpdateUrl"
+    - type: "DescriptionType.Address"
+    - type: "DescriptionType.Country"
+    - type: "DescriptionType.Phone"
+
+  icon_requirements:
+    format: ".ico"
+    sizes: "16, 24, 32, 48, 256 (32-bit)"
+    build_action: "EmbeddedResource"
+    notes: "Referenced via fully qualified resource name: Namespace.Folder.filename.ico"
+
+# Build Configuration
+build:
+  output:
+    extension: ".rhp"
+
+  critical_settings:
+    - key: "EnableDynamicLoading"
+      value: "true"
+      reason: "Required for Rhino to load the plugin dynamically"
+
+    - key: "TargetExt"
+      value: ".rhp"
+      reason: "Rhino plugin format"
+
+    - key: "ExcludeAssets"
+      value: "runtime"
+      applies_to: "RhinoCommon PackageReference"
+      reason: "Rhino provides RhinoCommon at runtime — do not copy to output"
+
+  debug:
+    method: "Launch profiles"
+    rhino8:
+      executable: "C:\\Program Files\\Rhino 8\\System\\Rhino.exe"
+      arguments: "/netcore"
+      environment:
+        RHINO_PACKAGE_DIRS: "$(ProjectDir)$(OutputPath)\\"
+
+# Naming Conventions
+conventions:
+  namespaces:
+    pattern: "$PluginName$"
+    example: "GeometryTools"
+
+  plugins:
+    class_suffix: "Plugin"
+    example: "GeometryToolsPlugin"
+
+  commands:
+    class_suffix: "Command"
+    example: "OffsetSurfaceCommand"
+    notes: "EnglishName should match the class name or be a user-friendly variant"
+
+  guids:
+    format: "lowercase-hyphenated"
+    example: "12345678-1234-1234-1234-123456789abc"
+    rules:
+      - "Never change plugin GUID after initial release"
+      - "Use https://guidgenerator.com/ for new GUIDs"
+
+# Testing Guidelines
+testing:
+  manual:
+    steps:
+      - "Build the project"
+      - "Launch Rhino 8 with /netcore flag (use launch profile)"
+      - "Type command name in Rhino command line"
+      - "Test command behavior"
+
+  debugging:
+    method: "Launch profiles with RHINO_PACKAGE_DIRS"
+    ide_support:
+      - Visual Studio 2022
+      - JetBrains Rider
+    notes: "Use launch profiles in Properties/launchSettings.json"
+
+# Distribution
+distribution:
+  methods:
+    - name: "Yak Package Manager"
+      command: "yak push"
+      notes: "Official Rhino package manager"
+
+    - name: "Food4Rhino"
+      notes: "Community plugin marketplace"
+
+    - name: "Direct Download"
+      format: ".rhp"
+      notes: "Users install via Rhino's PlugInManager or drag-and-drop"
+
+# Common Pitfalls
+pitfalls:
+  - issue: "Plugin not loading in Rhino 8"
+    solution: "Must launch Rhino 8 with /netcore flag for .NET 7 plugins"
+
+  - issue: "Command not appearing"
+    solution: "Ensure command class inherits from Command, has a parameterless constructor, and EnglishName is defined"
+
+  - issue: "Missing assemblies at runtime"
+    solution: "RhinoCommon must have ExcludeAssets=runtime — Rhino provides it. Do not set CopyLocalLockFileAssemblies=true"
+
+  - issue: "Plugin icon not showing"
+    solution: "Ensure .ico file is set as EmbeddedResource and the resource path in AssemblyInfo.cs matches: Namespace.Folder.filename.ico"
+
+  - issue: "GUID collision with another plugin"
+    solution: "Always generate a unique GUID for each plugin"
+
+  - issue: "Multiple PlugIn classes"
+    solution: "Each .rhp assembly must have exactly one class that inherits from Rhino.PlugIns.PlugIn"
+
+  - issue: "RHINO_PACKAGE_DIRS not working"
+    solution: "Check the environment variable points to the directory containing the .rhp file, not the .rhp file itself"
+
+# Related Specs
+related_specs:
+  - grasshopper1
+  - grasshopper2

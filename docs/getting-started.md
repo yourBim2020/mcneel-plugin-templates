@@ -124,6 +124,70 @@ public sealed class MyComponent : Component
 }
 ```
 
+## Creating Your First Rhino Plugin
+
+### Step 1: Scaffold the Project
+
+```bash
+cd mcneel-plugin-templates
+dotnet run --project tools/Scaffolder -- new rhino MyRhinoPlugin
+```
+
+### Step 2: Open in Your IDE
+
+Open `MyRhinoPlugin/MyRhinoPlugin.csproj` in Visual Studio or Rider.
+
+### Step 3: Build
+
+Build the project. The output is a `.rhp` file in `bin/Debug/net7.0/`.
+
+### Step 4: Test in Rhino
+
+1. Select the **Rhino 8 - netcore** launch profile and press F5
+2. Rhino launches with `RHINO_PACKAGE_DIRS` pointing to your build output
+3. Type your command name (e.g., `MyRhinoPluginCommand`) in the Rhino command line
+4. The sample command prompts for two points and draws a line between them
+
+### Rhino Plugin Template Structure
+
+```
+MyRhinoPlugin/
+├── MyRhinoPlugin.csproj              # .NET 7 project file (.rhp output)
+├── MyRhinoPluginPlugin.cs            # Plugin entry point (Rhino.PlugIns.PlugIn)
+├── MyRhinoPluginCommand.cs           # Sample command (Rhino.Commands.Command)
+├── EmbeddedResources/
+│   └── plugin-utility.ico            # Plugin icon
+└── Properties/
+    ├── AssemblyInfo.cs               # Plugin metadata and GUID
+    └── launchSettings.json           # Rhino 8 debug profile
+```
+
+### Rhino Command Example
+
+```csharp
+public class MyCommand : Command
+{
+    public override string EnglishName => "MyCommand";
+
+    protected override Result RunCommand(RhinoDoc doc, RunMode mode)
+    {
+        // Interactive point selection
+        Point3d pt;
+        using (GetPoint gp = new GetPoint())
+        {
+            gp.SetCommandPrompt("Pick a point");
+            if (gp.Get() != GetResult.Point) return gp.CommandResult();
+            pt = gp.Point();
+        }
+
+        // Add geometry to document
+        doc.Objects.AddPoint(pt);
+        doc.Views.Redraw();
+        return Result.Success;
+    }
+}
+```
+
 ## Understanding the GH1 Template Structure
 
 ```

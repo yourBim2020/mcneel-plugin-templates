@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <TargetExt>.rhp</TargetExt>
+    <AssemblyName>$PluginName$</AssemblyName>
+    <RootNamespace>$PluginName$</RootNamespace>
+    <NoWarn>NU1701</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>$Version$</Version>
+    <Title>$PluginName$</Title>
+    <Company>$CompanyName$</Company>
+    <Description>$PluginDescription$</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RhinoCommon" Version="8.0.23304.9001" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="EmbeddedResources\**\*.ico" />
+  </ItemGroup>
+
+</Project>

@@ -76,7 +76,8 @@ public partial class ProjectScaffolder
         AnsiConsole.MarkupLine("[dim]Next steps:[/]");
         AnsiConsole.MarkupLine($"  1. [white]cd {projectPath}[/]");
         AnsiConsole.MarkupLine($"  2. Open [white]{projectName}.csproj[/] in Visual Studio or Rider");
-        AnsiConsole.MarkupLine("  3. Build and test in Grasshopper");
+        var testTarget = templateName.StartsWith("grasshopper") ? "Grasshopper" : "Rhino";
+        AnsiConsole.MarkupLine($"  3. Build and test in {testTarget}");
         AnsiConsole.WriteLine();
     }
 
