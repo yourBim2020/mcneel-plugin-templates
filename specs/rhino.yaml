@@ -7,14 +7,15 @@ metadata:
   version: "1.0.0"
   description: |
     Native Rhino plugins extend Rhino with custom commands, features, and tools.
-    They run on .NET 7, use the RhinoCommon SDK, and output .rhp plugin files.
+    They support .NET 4.8 and .NET 8 via configuration-based multi-targeting, use the RhinoCommon SDK, and output .rhp plugin files.
     Commands are automatically discovered by Rhino through reflection.
 
 # Runtime Environment
 runtime:
   host_application: Rhino 8
-  framework: net7.0
-  clr_version: "7.0"
+  framework: "net48 / net8.0-windows"
+  clr_version: "4.0 / CoreCLR"
+  framework_notes: "net48 for Debug/Release configs, net8.0-windows for DebugNET8/ReleaseNET8 configs"
   architecture:
     - x64
   os:
@@ -43,12 +44,12 @@ dependencies:
 # Project Structure
 project_structure:
   type: sdk-style
-  target_framework: net7.0
+  target_framework: net48 / net8.0-windows (configuration-based)
   output_extension: ".rhp"
 
   required_files:
     - path: "*.csproj"
-      description: "SDK-style project file targeting net7.0 with .rhp output"
+      description: "SDK-style project file with configuration-based multi-targeting (net48/net8.0-windows) and .rhp output"
 
     - path: "*Plugin.cs"
       description: "Plugin entry point"
@@ -250,7 +251,7 @@ distribution:
 # Common Pitfalls
 pitfalls:
   - issue: "Plugin not loading in Rhino 8"
-    solution: "Must launch Rhino 8 with /netcore flag for .NET 7 plugins"
+    solution: "Check target framework matches build configuration (net48 for Debug/Release, net8.0-windows for DebugNET8/ReleaseNET8). For .NET 8 builds, launch Rhino 8 with /netcore flag."
 
   - issue: "Command not appearing"
     solution: "Ensure command class inherits from Command, has a parameterless constructor, and EnglishName is defined"

@@ -202,7 +202,7 @@ pitfalls:
     solution: "Keep AutoCAD object access within the transaction scope. Do not store AutoCAD objects across SolveInstance calls."
 
   - issue: "GHA not loading"
-    solution: "Check target framework is net48. Verify assembly references match AutoCAD version."
+    solution: "Check target framework matches build configuration (net48 for Debug/Release, net8.0-windows for DebugNET8/ReleaseNET8). Verify assembly references match AutoCAD version."
 
 # Related Specs
 related_specs:

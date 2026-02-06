@@ -1,11 +1,11 @@
 # Rhino Plugin Template
 
-A template for creating Rhino plugins with native commands, targeting **Rhino 8** with .NET 7.
+A template for creating Rhino plugins with native commands, targeting **Rhino 8** with .NET 4.8 / .NET 8.
 
 ## Requirements
 
 - Visual Studio 2022 or later / JetBrains Rider
-- .NET 7 SDK
+- .NET Framework 4.8 SDK and/or .NET 8 SDK
 - Rhino 8 installed (for testing)
 
 ## Getting Started
@@ -17,7 +17,14 @@ A template for creating Rhino plugins with native commands, targeting **Rhino 8*
 
 2. Open the generated `.csproj` in Visual Studio or Rider
 
-3. Build the project — output is a `.rhp` file in `bin/Debug/net7.0/`
+3. Build the project using the appropriate configuration:
+
+   | Configuration | Framework | Output |
+   |---------------|-----------|--------|
+   | Debug         | .NET 4.8  | `.rhp` in build output |
+   | Release       | .NET 4.8  | `.rhp` in build output |
+   | DebugNET8     | .NET 8    | `.rhp` in build output |
+   | ReleaseNET8   | .NET 8    | `.rhp` in build output |
 
 4. Select the **Rhino 8 - netcore** launch profile and press F5 to debug
 
@@ -38,7 +45,7 @@ A template for creating Rhino plugins with native commands, targeting **Rhino 8*
 
 ```
 $PluginName$/
-├── $PluginName$.csproj              # .NET 7 project file (.rhp output)
+├── $PluginName$.csproj              # .NET 4.8 / .NET 8 project file (.rhp output)
 ├── $PluginName$Plugin.cs            # Plugin entry point (Rhino.PlugIns.PlugIn)
 ├── $PluginName$Command.cs           # Sample command (Rhino.Commands.Command)
 ├── EmbeddedResources/
@@ -118,7 +125,7 @@ Note: `ExcludeAssets="runtime"` is set because Rhino provides RhinoCommon at run
 
 | Feature | Rhino Plugin | Grasshopper 1 | Grasshopper 2 |
 |---------|-------------|---------------|---------------|
-| Framework | .NET 7 | .NET 4.8 | .NET 7 |
+| Framework | .NET 4.8 / .NET 8 | .NET 4.8 / .NET 8 | .NET 8 |
 | Output | `.rhp` | `.gha` | `.rhp` |
 | Entry Point | `Rhino.PlugIns.PlugIn` | `GH_AssemblyInfo` | `Grasshopper2.Framework.Plugin` |
 | UI Pattern | Commands | Components | Components |
