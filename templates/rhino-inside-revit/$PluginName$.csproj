@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>false</ImplicitUsings>
+
+    <!-- Assembly Information -->
+    <AssemblyName>$PluginName$</AssemblyName>
+    <RootNamespace>$PluginName$</RootNamespace>
+    <Version>$Version$</Version>
+    <AssemblyVersion>$Version$</AssemblyVersion>
+    <FileVersion>$Version$</FileVersion>
+    <Authors>$AuthorName$</Authors>
+    <Company>$CompanyName$</Company>
+    <Description>$PluginDescription$</Description>
+    <Copyright>Copyright &#169; $CompanyName$ $Year$</Copyright>
+
+    <!-- Build Configuration -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+
+    <!-- Revit Version -->
+    <RevitYear>$RevitYear$</RevitYear>
+
+    <!-- Debug: Copy to Grasshopper Libraries-Inside-Revit folder -->
+    <OutputPath Condition="'$(Configuration)' == 'Debug'">$(APPDATA)\Grasshopper\Libraries-Inside-Revit-$(RevitYear)\$PluginName$\</OutputPath>
+    <OutputPath Condition="'$(Configuration)' == 'Release'">bin\Release\</OutputPath>
+  </PropertyGroup>
+
+  <!-- Grasshopper SDK Reference -->
+  <ItemGroup>
+    <PackageReference Include="Grasshopper" Version="7.0.0" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <!-- Revit API References -->
+  <ItemGroup>
+    <Reference Include="RevitAPI">
+      <HintPath>C:\Program Files\Autodesk\Revit $(RevitYear)\RevitAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>C:\Program Files\Autodesk\Revit $(RevitYear)\RevitAPIUI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Rhino.Inside.Revit Reference -->
+  <ItemGroup>
+    <Reference Include="RhinoInside.Revit">
+      <HintPath>$(ProgramData)\Autodesk\Revit\Addins\$(RevitYear)\RhinoInside.Revit\RhinoInside.Revit.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Embedded Resources -->
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\**\*" />
+  </ItemGroup>
+
+  <!-- Exclude runtime assemblies from output -->
+  <PropertyGroup>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+</Project>

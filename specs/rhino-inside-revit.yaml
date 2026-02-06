@@ -1,0 +1,227 @@
+# OpenSpec Platform Definition: Rhino.Inside.Revit
+# Spec-driven development requirements for Grasshopper plugins running inside Autodesk Revit
+
+metadata:
+  platform: rhino-inside-revit
+  display_name: Rhino.Inside Revit
+  version: "1.0.0"
+  description: |
+    Rhino.Inside.Revit (RIR) allows Rhino and Grasshopper to run inside Autodesk Revit.
+    This spec defines requirements for Grasshopper component plugins that access the
+    Revit API through the RhinoInside.Revit bridge.
+
+# Runtime Environment
+runtime:
+  host_application: Autodesk Revit (via Rhino.Inside.Revit)
+  framework: net48
+  clr_version: "4.0"
+  architecture:
+    - x64
+  os:
+    - windows
+
+# SDK Dependencies
+dependencies:
+  required:
+    - name: Grasshopper
+      version: ">=7.0.0"
+      source: nuget
+      notes: "Includes RhinoCommon as transitive dependency. Use ExcludeAssets=runtime."
+
+    - name: RevitAPI.dll
+      version: "Matches target Revit year"
+      source: local
+      notes: "Direct reference from C:\\Program Files\\Autodesk\\Revit 20XX\\RevitAPI.dll. Set Private=false."
+
+    - name: RevitAPIUI.dll
+      version: "Matches target Revit year"
+      source: local
+      notes: "Direct reference from C:\\Program Files\\Autodesk\\Revit 20XX\\RevitAPIUI.dll. Set Private=false."
+
+    - name: RhinoInside.Revit.dll
+      version: "Matches installed RIR version"
+      source: local
+      notes: "Direct reference from %ProgramData%\\Autodesk\\Revit\\Addins\\20XX\\RhinoInside.Revit\\. Set Private=false."
+
+  optional:
+    - name: RhinoWindows
+      version: ">=7.0.0"
+      source: nuget
+      notes: "For Windows Forms integration"
+
+# Project Structure
+project_structure:
+  type: sdk-style
+  target_framework: net48
+
+  required_files:
+    - path: "*.csproj"
+      description: "SDK-style project file with Revit API and RIR references"
+
+    - path: "*Info.cs"
+      description: "GH_AssemblyInfo implementation"
+      must_implement: "Grasshopper.Kernel.GH_AssemblyInfo"
+
+    - path: "Properties/AssemblyInfo.cs"
+      description: "Assembly metadata attributes"
+
+  recommended_structure:
+    - path: "Components/"
+      description: "GH_Component implementations accessing Revit API"
+
+    - path: "Parameters/"
+      description: "Custom GH_Param implementations"
+
+    - path: "Resources/"
+      description: "Embedded icons and assets"
+
+    - path: "Types/"
+      description: "Custom Grasshopper types (GH_Goo) wrapping Revit elements"
+
+# Component Development Rules
+component_rules:
+  base_class: "Grasshopper.Kernel.GH_Component"
+
+  required_overrides:
+    - name: "RegisterInputParams"
+      signature: "protected override void RegisterInputParams(GH_InputParamManager pManager)"
+
+    - name: "RegisterOutputParams"
+      signature: "protected override void RegisterOutputParams(GH_OutputParamManager pManager)"
+
+    - name: "SolveInstance"
+      signature: "protected override void SolveInstance(IGH_DataAccess DA)"
+
+    - name: "ComponentGuid"
+      type: "property"
+      notes: "Must be unique, never change after release"
+
+  revit_api_access:
+    static_type: "RhinoInside.Revit.Revit"
+    active_document: "RhinoInside.Revit.Revit.ActiveDBDocument"
+    ui_application: "RhinoInside.Revit.Revit.ActiveUIApplication"
+    namespace_aliases:
+      - "DB = Autodesk.Revit.DB"
+      - "UI = Autodesk.Revit.UI"
+
+  icon_requirements:
+    size: "24x24"
+    formats:
+      - png
+      - bmp
+    build_action: "EmbeddedResource"
+
+# Build Configuration
+build:
+  debug:
+    output_path: "$(APPDATA)\\Grasshopper\\Libraries-Inside-Revit-$(RevitYear)\\$PluginName$\\"
+    notes: "Version-specific folder ensures plugin only loads within RIR context"
+
+  release:
+    output_path: "bin\\Release\\"
+
+  critical_settings:
+    - key: "CopyLocalLockFileAssemblies"
+      value: "false"
+      reason: "Prevent copying Rhino/Revit assemblies to output"
+
+    - key: "ExcludeAssets"
+      value: "runtime"
+      applies_to: "Grasshopper package reference"
+      reason: "Use Rhino's runtime assemblies loaded by RIR"
+
+    - key: "Private"
+      value: "false"
+      applies_to: "RevitAPI, RevitAPIUI, RhinoInside.Revit references"
+      reason: "These assemblies are provided by Revit and RIR at runtime"
+
+# Installation
+installation:
+  paths:
+    all_users: "%PROGRAMDATA%\\Grasshopper\\Libraries-Inside-Revit-20XX"
+    current_user: "%APPDATA%\\Grasshopper\\Libraries-Inside-Revit-20XX"
+  notes: |
+    The version-specific folder (e.g., Libraries-Inside-Revit-2024) ensures
+    the plugin only loads when Grasshopper runs inside the matching Revit version
+    through Rhino.Inside.Revit.
+
+# Naming Conventions
+conventions:
+  namespaces:
+    pattern: "$CompanyName$.$PluginName$"
+    example: "Acme.RevitWallTools"
+
+  components:
+    class_suffix: "Component"
+    example: "CollectWallsComponent"
+
+  parameters:
+    class_suffix: "Param"
+    example: "RevitElementParam"
+
+  guids:
+    format: "lowercase-hyphenated"
+    example: "12345678-1234-1234-1234-123456789abc"
+    rules:
+      - "Never change ComponentGuid after initial release"
+      - "Generate unique GUIDs for each component"
+      - "Use separate GUIDs for plugin, assembly, and components"
+
+# Testing Guidelines
+testing:
+  manual:
+    steps:
+      - "Build in Debug mode"
+      - "Launch Autodesk Revit"
+      - "Start Rhino.Inside.Revit from the Rhinoceros tab"
+      - "Open Grasshopper"
+      - "Find component in specified Category/Subcategory"
+      - "Test with a Revit model containing relevant elements"
+
+  debugging:
+    method: "Attach to Process"
+    target: "Revit.exe"
+    ide_support:
+      - Visual Studio 2022
+      - JetBrains Rider
+
+# Distribution
+distribution:
+  methods:
+    - name: "Food4Rhino"
+      url: "https://www.food4rhino.com/"
+      notes: "Community plugin marketplace"
+
+    - name: "Direct Download"
+      format: ".zip containing .gha"
+      notes: "Users place in Libraries-Inside-Revit-20XX folder"
+
+# Common Pitfalls
+pitfalls:
+  - issue: "ComponentGuid collision"
+    solution: "Always generate new unique GUIDs"
+
+  - issue: "Missing GH_AssemblyInfo"
+    solution: "Create class inheriting GH_AssemblyInfo"
+
+  - issue: "GHA not loading in Grasshopper inside Revit"
+    solution: "Ensure the .gha is placed in Libraries-Inside-Revit-20XX, not regular Libraries folder"
+
+  - issue: "Revit API reference not found"
+    solution: "Verify RevitAPI.dll HintPath matches your Revit installation path and year"
+
+  - issue: "RhinoInside.Revit.dll reference not found"
+    solution: "Verify Rhino.Inside.Revit is installed for the target Revit version. Check both ProgramData and AppData Addins folders."
+
+  - issue: "NullReferenceException accessing Revit.ActiveDBDocument"
+    solution: "Ensure Grasshopper is running inside Revit via RIR, not standalone Rhino"
+
+  - issue: "Runtime assembly conflicts"
+    solution: "Set ExcludeAssets=runtime on NuGet references and Private=false on DLL references"
+
+  - issue: "Plugin loads in standalone Grasshopper"
+    solution: "Use Libraries-Inside-Revit-20XX folder, not Libraries. Add runtime checks for Revit context."
+
+# Related Specs
+related_specs:
+  - grasshopper1

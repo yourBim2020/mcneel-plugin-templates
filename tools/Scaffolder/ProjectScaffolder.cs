@@ -26,6 +26,7 @@ public partial class ProjectScaffolder
         ["$ComponentDescription$"] = new("Component description", "A sample component"),
         ["$Category$"] = new("Grasshopper tab category", "Custom"),
         ["$Subcategory$"] = new("Subcategory within tab", "Util"),
+        ["$RevitYear$"] = new("Target Revit version year", "2024"),
     };
 
     /// <summary>
@@ -76,7 +77,9 @@ public partial class ProjectScaffolder
         AnsiConsole.MarkupLine("[dim]Next steps:[/]");
         AnsiConsole.MarkupLine($"  1. [white]cd {projectPath}[/]");
         AnsiConsole.MarkupLine($"  2. Open [white]{projectName}.csproj[/] in Visual Studio or Rider");
-        var testTarget = templateName.StartsWith("grasshopper") ? "Grasshopper" : "Rhino";
+        var testTarget = templateName.StartsWith("grasshopper") ? "Grasshopper"
+            : templateName.Contains("inside-revit") ? "Revit via Rhino.Inside.Revit"
+            : "Rhino";
         AnsiConsole.MarkupLine($"  3. Build and test in {testTarget}");
         AnsiConsole.WriteLine();
     }

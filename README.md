@@ -9,7 +9,7 @@ A multi-platform template repository for developing plugins across the McNeel ec
 | **Grasshopper 1** | Ready | .NET 4.8 | Visual programming components for Rhino 8 |
 | **Grasshopper 2** | Ready | .NET 7 | Next-gen Grasshopper components (Rhino 8/9) |
 | **Rhino Plugin** | Ready | .NET 7 | Native Rhino commands and features |
-| Rhino.Inside Revit | Planned | .NET 4.8 | Rhino geometry in Autodesk Revit |
+| **Rhino.Inside Revit** | Ready | .NET 4.8 | Grasshopper components in Autodesk Revit |
 | Rhino.Inside AutoCAD | Planned | .NET 4.8 | Rhino geometry in AutoCAD |
 
 ## Quick Start
@@ -21,6 +21,7 @@ A multi-platform template repository for developing plugins across the McNeel ec
 - Rhino 8 installed
 - .NET Framework 4.8 SDK (for GH1 plugins)
 - .NET 7 SDK (for GH2 and Rhino plugins)
+- Autodesk Revit + [Rhino.Inside.Revit](https://www.rhino3d.com/inside/revit/) (for RIR plugins)
 
 ### Create a New Plugin
 
@@ -37,6 +38,9 @@ dotnet run --project tools/Scaffolder -- new grasshopper2 MyGH2Plugin
 
 # Scaffold a new Rhino plugin
 dotnet run --project tools/Scaffolder -- new rhino MyRhinoPlugin
+
+# Scaffold a new Rhino.Inside Revit plugin
+dotnet run --project tools/Scaffolder -- new rhino-inside-revit MyRIRPlugin
 
 # Or use non-interactive mode with defaults
 dotnet run --project tools/Scaffolder -- new grasshopper1 MyPlugin --interactive false
@@ -75,12 +79,13 @@ mcneel-plugin-templates/
 │   ├── grasshopper1/          # Grasshopper 1 (Rhino 8)
 │   ├── grasshopper2/          # Grasshopper 2 (Rhino 8/9)
 │   ├── rhino/                 # Rhino plugin (Rhino 8)
-│   ├── rhino-inside-revit/    # Rhino.Inside Revit (planned)
+│   ├── rhino-inside-revit/    # Rhino.Inside Revit
 │   └── rhino-inside-autocad/  # Rhino.Inside AutoCAD (planned)
 ├── specs/                      # OpenSpec YAML definitions
 │   ├── grasshopper1.yaml      # GH1 platform requirements
 │   ├── grasshopper2.yaml      # GH2 platform requirements
-│   └── rhino.yaml             # Rhino plugin platform requirements
+│   ├── rhino.yaml             # Rhino plugin platform requirements
+│   └── rhino-inside-revit.yaml # Rhino.Inside Revit requirements
 ├── docs/                       # Documentation
 │   └── getting-started.md     # Setup and usage guide
 └── tools/
@@ -99,6 +104,7 @@ All templates use `$PLACEHOLDER$` style variables that are replaced during scaff
 | `$CompanyName$` | Company name | `Acme Inc` |
 | `$Version$` | Semantic version | `1.0.0` |
 | `$PluginGuid$` | Unique plugin identifier | Auto-generated |
+| `$RevitYear$` | Target Revit year (RIR only) | `2024` |
 | `$Category$` | Grasshopper tab | `Custom` |
 | `$Subcategory$` | Tab subcategory | `Util` |
 
