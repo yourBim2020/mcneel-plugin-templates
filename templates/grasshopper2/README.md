@@ -1,11 +1,11 @@
 # Grasshopper 2 Plugin Template
 
-A template for creating Grasshopper 2 components targeting **Rhino 8/9** with .NET 7.
+A template for creating Grasshopper 2 components targeting **Rhino 8/9** with .NET 8.
 
 ## Requirements
 
 - Visual Studio 2022 or later / JetBrains Rider
-- .NET 7 SDK
+- .NET 8 SDK
 - Rhino 8 or Rhino 9 WIP installed (for testing)
 - Grasshopper 2 plugin (currently in Alpha)
 
@@ -43,7 +43,7 @@ A template for creating Grasshopper 2 components targeting **Rhino 8/9** with .N
 
 ```
 $PluginName$/
-├── $PluginName$.csproj           # .NET 7 project file (.rhp output)
+├── $PluginName$.csproj           # .NET 8 project file (.rhp output)
 ├── $PluginName$Plugin.cs         # Plugin entry point (Grasshopper2.Framework.Plugin)
 ├── Nodes/
 │   └── $PluginName$Component.cs  # Sample component (Grasshopper2.Components.Component)
@@ -56,7 +56,7 @@ $PluginName$/
 
 | Feature | Grasshopper 1 | Grasshopper 2 |
 |---------|---------------|---------------|
-| Framework | .NET 4.8 | .NET 7 |
+| Framework | .NET 4.8 | .NET 8 |
 | Output | `.gha` | `.rhp` |
 | Plugin Base | `GH_AssemblyInfo` | `Grasshopper2.Framework.Plugin` |
 | Component Base | `GH_Component` | `Grasshopper2.Components.Component` |

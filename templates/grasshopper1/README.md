@@ -5,7 +5,7 @@ A template for creating Grasshopper 1 components targeting **Rhino 8**.
 ## Requirements
 
 - Visual Studio 2022 or later / JetBrains Rider
-- .NET Framework 4.8 SDK
+- .NET Framework 4.8 SDK and/or .NET 8 SDK
 - Rhino 8 installed (for testing)
 
 ## Getting Started
@@ -17,9 +17,14 @@ A template for creating Grasshopper 1 components targeting **Rhino 8**.
 
 2. Open the generated `.csproj` in Visual Studio or Rider
 
-3. Build the project:
-   - **Debug**: Automatically copies to `%APPDATA%\Grasshopper\Libraries\`
-   - **Release**: Outputs to `bin\Release\`
+3. Build the project using the appropriate configuration:
+
+   | Configuration | Framework | Output |
+   |---------------|-----------|--------|
+   | Debug         | .NET 4.8  | `%APPDATA%\Grasshopper\Libraries\` |
+   | Release       | .NET 4.8  | `bin\Release\` |
+   | DebugNET8     | .NET 8    | `%APPDATA%\Grasshopper\Libraries\` |
+   | ReleaseNET8   | .NET 8    | `bin\Release\` |
 
 4. Start Rhino 8 and open Grasshopper to test your component
 

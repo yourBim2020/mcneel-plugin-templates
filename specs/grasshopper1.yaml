@@ -12,8 +12,9 @@ metadata:
 # Runtime Environment
 runtime:
   host_application: Rhino 8
-  framework: net48
-  clr_version: "4.0"
+  framework: "net48 / net8.0-windows"
+  clr_version: "4.0 / CoreCLR"
+  framework_notes: "net48 for Debug/Release configs, net8.0-windows for DebugNET8/ReleaseNET8 configs"
   architecture:
     - x64
   os:
@@ -41,7 +42,7 @@ dependencies:
 # Project Structure
 project_structure:
   type: sdk-style
-  target_framework: net48
+  target_framework: net48 / net8.0-windows (configuration-based)
 
   required_files:
     - path: "*.csproj"
@@ -173,7 +174,7 @@ pitfalls:
     solution: "Create class inheriting GH_AssemblyInfo"
 
   - issue: "DLL not loading"
-    solution: "Check target framework is net48, verify assembly references"
+    solution: "Check target framework matches build configuration (net48 for Debug/Release, net8.0-windows for DebugNET8/ReleaseNET8), verify assembly references"
 
   - issue: "Component not appearing"
     solution: "Verify GH_Exposure is not hidden, check Category/Subcategory"

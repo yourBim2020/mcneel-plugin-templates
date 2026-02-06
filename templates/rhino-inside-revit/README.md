@@ -5,7 +5,7 @@ A template for creating Grasshopper components that run inside **Autodesk Revit*
 ## Requirements
 
 - Visual Studio 2022 or later / JetBrains Rider
-- .NET Framework 4.8 SDK
+- .NET Framework 4.8 SDK and/or .NET 8 SDK
 - Autodesk Revit (2020 or later) installed
 - [Rhino.Inside.Revit](https://www.rhino3d.com/inside/revit/) installed
 
@@ -22,9 +22,14 @@ A template for creating Grasshopper components that run inside **Autodesk Revit*
    - `RevitAPI.dll` and `RevitAPIUI.dll` from your Revit install directory
    - `RhinoInside.Revit.dll` from the Rhino.Inside.Revit addin folder
 
-4. Build the project:
-   - **Debug**: Automatically copies to `%APPDATA%\Grasshopper\Libraries-Inside-Revit-20XX\`
-   - **Release**: Outputs to `bin\Release\`
+4. Build the project using the appropriate configuration:
+
+   | Configuration | Framework | Output |
+   |---------------|-----------|--------|
+   | Debug         | .NET 4.8  | `%APPDATA%\Grasshopper\Libraries-Inside-Revit-20XX\` |
+   | Release       | .NET 4.8  | `bin\Release\` |
+   | DebugNET8     | .NET 8    | `%APPDATA%\Grasshopper\Libraries-Inside-Revit-20XX\` |
+   | ReleaseNET8   | .NET 8    | `bin\Release\` |
 
 5. Launch Revit, start Rhino.Inside.Revit, open Grasshopper, and test your component
 

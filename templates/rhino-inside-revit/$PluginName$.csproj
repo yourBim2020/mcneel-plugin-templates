@@ -1,7 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
+  <!-- Multi-target framework: Debug/Release = NET 4.8, DebugNET8/ReleaseNET8 = NET 8 -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">
     <TargetFramework>net48</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'DebugNET8' Or '$(Configuration)' == 'ReleaseNET8'">
+    <TargetFramework>net8.0-windows</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Configurations>Debug;Release;DebugNET8;ReleaseNET8</Configurations>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>false</ImplicitUsings>
@@ -26,8 +35,8 @@
     <RevitYear>$RevitYear$</RevitYear>
 
     <!-- Debug: Copy to Grasshopper Libraries-Inside-Revit folder -->
-    <OutputPath Condition="'$(Configuration)' == 'Debug'">$(APPDATA)\Grasshopper\Libraries-Inside-Revit-$(RevitYear)\$PluginName$\</OutputPath>
-    <OutputPath Condition="'$(Configuration)' == 'Release'">bin\Release\</OutputPath>
+    <OutputPath Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugNET8'">$(APPDATA)\Grasshopper\Libraries-Inside-Revit-$(RevitYear)\$PluginName$\</OutputPath>
+    <OutputPath Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseNET8'">bin\Release\</OutputPath>
   </PropertyGroup>
 
   <!-- Grasshopper SDK Reference -->

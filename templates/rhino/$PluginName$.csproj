@@ -1,12 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- Multi-target framework: Debug/Release = NET 4.8, DebugNET8/ReleaseNET8 = NET 8 -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">
+    <TargetFramework>net48</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'DebugNET8' Or '$(Configuration)' == 'ReleaseNET8'">
+    <TargetFramework>net8.0-windows</TargetFramework>
+  </PropertyGroup>
+
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <Configurations>Debug;Release;DebugNET8;ReleaseNET8</Configurations>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <TargetExt>.rhp</TargetExt>
     <AssemblyName>$PluginName$</AssemblyName>
     <RootNamespace>$PluginName$</RootNamespace>
     <NoWarn>NU1701</NoWarn>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <PropertyGroup>

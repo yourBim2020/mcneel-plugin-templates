@@ -6,21 +6,20 @@ A multi-platform template repository for developing plugins across the McNeel ec
 
 | Platform | Status | Target Framework | Description |
 |----------|--------|------------------|-------------|
-| **Grasshopper 1** | Ready | .NET 4.8 | Visual programming components for Rhino 8 |
-| **Grasshopper 2** | Ready | .NET 7 | Next-gen Grasshopper components (Rhino 8/9) |
-| **Rhino Plugin** | Ready | .NET 7 | Native Rhino commands and features |
-| **Rhino.Inside Revit** | Ready | .NET 4.8 | Grasshopper components in Autodesk Revit |
+| **Grasshopper 1** | Ready | .NET 4.8 / .NET 8 | Visual programming components for Rhino 8 |
+| **Grasshopper 2** | Ready | .NET 8 | Next-gen Grasshopper components (Rhino 8/9) |
+| **Rhino Plugin** | Ready | .NET 4.8 / .NET 8 | Native Rhino commands and features |
+| **Rhino.Inside Revit** | Ready | .NET 4.8 / .NET 8 | Grasshopper components in Autodesk Revit |
 | **Rhino.Inside AutoCAD** | Ready | .NET 4.8 / .NET 8 | Grasshopper components in AutoCAD |
 
 ## Quick Start
 
 ### Prerequisites
 
-- .NET 8.0 SDK (for scaffolding tool)
+- .NET 8.0 SDK
+- .NET Framework 4.8 SDK (for .NET 4.8 configurations)
 - Visual Studio 2022 or JetBrains Rider
 - Rhino 8 installed
-- .NET Framework 4.8 SDK (for GH1 plugins)
-- .NET 7 SDK (for GH2 and Rhino plugins)
 - Autodesk Revit + [Rhino.Inside.Revit](https://www.rhino3d.com/inside/revit/) (for RIR plugins)
 
 ### Create a New Plugin

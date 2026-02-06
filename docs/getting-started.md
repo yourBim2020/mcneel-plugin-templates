@@ -15,9 +15,8 @@ This guide walks you through setting up your development environment and creatin
    - Include ".NET Framework 4.8 SDK" component
 
 3. **.NET SDKs**
-   - .NET 8.0 SDK (for scaffolding tool)
-   - .NET Framework 4.8 SDK (for Grasshopper 1)
-   - .NET 7 SDK (for Grasshopper 2 / Rhino plugins)
+   - .NET 8.0 SDK
+   - .NET Framework 4.8 SDK (for .NET 4.8 configurations)
 
 ### Verify Installation
 
@@ -86,7 +85,7 @@ Build the project. The output is a `.rhp` file in the `bin/` directory.
 
 ```
 MyGH2Plugin/
-├── MyGH2Plugin.csproj              # .NET 7 project file (.rhp output)
+├── MyGH2Plugin.csproj              # .NET 8 project file (.rhp output)
 ├── MyGH2PluginPlugin.cs            # Plugin entry point
 ├── Nodes/
 │   └── MyGH2PluginComponent.cs     # Sample component
@@ -139,7 +138,7 @@ Open `MyRhinoPlugin/MyRhinoPlugin.csproj` in Visual Studio or Rider.
 
 ### Step 3: Build
 
-Build the project. The output is a `.rhp` file in `bin/Debug/net7.0/`.
+Build the project. The output is a `.rhp` file in the build output directory.
 
 ### Step 4: Test in Rhino
 
@@ -152,7 +151,7 @@ Build the project. The output is a `.rhp` file in `bin/Debug/net7.0/`.
 
 ```
 MyRhinoPlugin/
-├── MyRhinoPlugin.csproj              # .NET 7 project file (.rhp output)
+├── MyRhinoPlugin.csproj              # .NET 4.8 / .NET 8 project file (.rhp output)
 ├── MyRhinoPluginPlugin.cs            # Plugin entry point (Rhino.PlugIns.PlugIn)
 ├── MyRhinoPluginCommand.cs           # Sample command (Rhino.Commands.Command)
 ├── EmbeddedResources/
@@ -280,7 +279,7 @@ public class AnotherComponent : GH_Component
 ### Build Errors About Missing References
 
 - Ensure Grasshopper NuGet package is restored
-- Check target framework is `net48`
+- Check target framework matches the selected build configuration
 
 ### Runtime Errors
 
@@ -325,7 +324,7 @@ yak push
 
 | Feature | Grasshopper 1 | Grasshopper 2 | Rhino Plugin |
 |---------|---------------|---------------|--------------|
-| Framework | .NET 4.8 | .NET 7 | .NET 7 |
+| Framework | .NET 4.8 / .NET 8 | .NET 8 | .NET 4.8 / .NET 8 |
 | UI | Component-based | Component-based | Commands |
 | Plugin Entry | `GH_AssemblyInfo` | `Grasshopper2.Framework.Plugin` | `Rhino.PlugIns.PlugIn` |
 | Component Base | `GH_Component` | `Grasshopper2.Components.Component` | N/A |

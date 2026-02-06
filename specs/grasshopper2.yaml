@@ -7,14 +7,14 @@ metadata:
   version: "1.0.0"
   description: |
     Grasshopper 2 is the next-generation visual programming environment for Rhino.
-    It runs on .NET 7, uses a new component API, and outputs .rhp plugin files.
+    It runs on .NET 8, uses a new component API, and outputs .rhp plugin files.
     Currently in alpha, available for Rhino 8 (netcore mode) and Rhino 9 WIP.
 
 # Runtime Environment
 runtime:
   host_application: Rhino 8/9
-  framework: net7.0
-  clr_version: "7.0"
+  framework: net8.0
+  clr_version: "8.0"
   architecture:
     - x64
   os:
@@ -43,12 +43,12 @@ dependencies:
 # Project Structure
 project_structure:
   type: sdk-style
-  target_framework: net7.0
+  target_framework: net8.0
   output_extension: ".rhp"
 
   required_files:
     - path: "*.csproj"
-      description: "SDK-style project file targeting net7.0 with .rhp output"
+      description: "SDK-style project file targeting net8.0 with .rhp output"
 
     - path: "*Plugin.cs"
       description: "Plugin entry point"
@@ -224,7 +224,7 @@ pitfalls:
     solution: "Always generate new unique GUIDs for each component"
 
   - issue: "Plugin not loading in Rhino 8"
-    solution: "Must launch Rhino 8 with /netcore flag for .NET 7 plugins"
+    solution: "Must launch Rhino 8 with /netcore flag for .NET 8 plugins"
 
   - issue: "Missing assemblies at runtime"
     solution: "Ensure CopyLocalLockFileAssemblies is true in .csproj"
