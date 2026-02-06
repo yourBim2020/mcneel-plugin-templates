@@ -79,6 +79,7 @@ public partial class ProjectScaffolder
         AnsiConsole.MarkupLine($"  2. Open [white]{projectName}.csproj[/] in Visual Studio or Rider");
         var testTarget = templateName.StartsWith("grasshopper") ? "Grasshopper"
             : templateName.Contains("inside-revit") ? "Revit via Rhino.Inside.Revit"
+            : templateName.Contains("inside-autocad") ? "AutoCAD via Rhino.Inside.AutoCAD"
             : "Rhino";
         AnsiConsole.MarkupLine($"  3. Build and test in {testTarget}");
         AnsiConsole.WriteLine();

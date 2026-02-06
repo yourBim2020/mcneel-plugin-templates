@@ -1,0 +1,210 @@
+# OpenSpec Platform Definition: Rhino.Inside.AutoCAD
+# Spec-driven development requirements for Grasshopper plugins running inside Autodesk AutoCAD
+
+metadata:
+  platform: rhino-inside-autocad
+  display_name: Rhino.Inside AutoCAD
+  version: "1.0.0"
+  description: |
+    Rhino.Inside.AutoCAD allows Rhino and Grasshopper to run inside Autodesk AutoCAD.
+    This spec defines requirements for Grasshopper component plugins that access the
+    AutoCAD .NET API through the Rhino.Inside.AutoCAD bridge.
+
+# Runtime Environment
+runtime:
+  host_application: Autodesk AutoCAD (via Rhino.Inside.AutoCAD)
+  framework: "net48 / net8.0-windows"
+  clr_version: "4.0 / CoreCLR"
+  framework_notes: "net48 for Debug/Release configs, net8.0-windows for DebugNET8/ReleaseNET8 configs"
+  architecture:
+    - x64
+  os:
+    - windows
+
+# SDK Dependencies
+dependencies:
+  required:
+    - name: Grasshopper
+      version: ">=8.0.23304.9001"
+      source: nuget
+      notes: "Includes RhinoCommon as transitive dependency. Use ExcludeAssets=runtime."
+
+    - name: AutoCAD.NET
+      version: ">=24.0.0"
+      source: nuget
+      notes: "AutoCAD managed wrappers (acmgd, acdbmgd). Match version to target AutoCAD year. Use ExcludeAssets=runtime."
+
+    - name: AutoCAD.NET.Core
+      version: ">=24.0.0"
+      source: nuget
+      notes: "AutoCAD core managed wrapper (accoremgd). Match version to target AutoCAD year. Use ExcludeAssets=runtime."
+
+  optional:
+    - name: RhinoWindows
+      version: ">=8.0.23304.9001"
+      source: nuget
+      notes: "For Windows Forms integration"
+
+# Project Structure
+project_structure:
+  type: sdk-style
+  target_framework: net48 / net8.0-windows (configuration-based)
+
+  required_files:
+    - path: "*.csproj"
+      description: "SDK-style project file with AutoCAD .NET API references"
+
+    - path: "*Info.cs"
+      description: "GH_AssemblyInfo implementation"
+      must_implement: "Grasshopper.Kernel.GH_AssemblyInfo"
+
+    - path: "Properties/AssemblyInfo.cs"
+      description: "Assembly metadata attributes"
+
+  recommended_structure:
+    - path: "Components/"
+      description: "GH_Component implementations accessing AutoCAD API"
+
+    - path: "Parameters/"
+      description: "Custom GH_Param implementations"
+
+    - path: "Resources/"
+      description: "Embedded icons and assets"
+
+    - path: "Types/"
+      description: "Custom Grasshopper types (GH_Goo) wrapping AutoCAD entities"
+
+# Component Development Rules
+component_rules:
+  base_class: "Grasshopper.Kernel.GH_Component"
+
+  required_overrides:
+    - name: "RegisterInputParams"
+      signature: "protected override void RegisterInputParams(GH_InputParamManager pManager)"
+
+    - name: "RegisterOutputParams"
+      signature: "protected override void RegisterOutputParams(GH_OutputParamManager pManager)"
+
+    - name: "SolveInstance"
+      signature: "protected override void SolveInstance(IGH_DataAccess DA)"
+
+    - name: "ComponentGuid"
+      type: "property"
+      notes: "Must be unique, never change after release"
+
+  autocad_api_access:
+    active_document: "Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument"
+    database: "doc.Database"
+    transaction_pattern: "db.TransactionManager.StartTransaction()"
+    namespace_aliases:
+      - "AcDb = Autodesk.AutoCAD.DatabaseServices"
+      - "AcAp = Autodesk.AutoCAD.ApplicationServices"
+      - "AcGe = Autodesk.AutoCAD.Geometry"
+
+  icon_requirements:
+    size: "24x24"
+    formats:
+      - png
+      - bmp
+    build_action: "EmbeddedResource"
+
+# Build Configuration
+build:
+  debug:
+    output_path: "$(APPDATA)\\Grasshopper\\Libraries\\$PluginName$\\"
+    notes: "Standard Grasshopper Libraries folder"
+
+  release:
+    output_path: "bin\\Release\\"
+
+  critical_settings:
+    - key: "CopyLocalLockFileAssemblies"
+      value: "false"
+      reason: "Prevent copying AutoCAD/Rhino assemblies to output"
+
+    - key: "ExcludeAssets"
+      value: "runtime"
+      applies_to: "All package references (Grasshopper, AutoCAD.NET, AutoCAD.NET.Core)"
+      reason: "Use host application's runtime assemblies"
+
+# Naming Conventions
+conventions:
+  namespaces:
+    pattern: "$CompanyName$.$PluginName$"
+    example: "Acme.AutoCADTools"
+
+  components:
+    class_suffix: "Component"
+    example: "CollectLayersComponent"
+
+  parameters:
+    class_suffix: "Param"
+    example: "AutocadEntityParam"
+
+  guids:
+    format: "lowercase-hyphenated"
+    example: "12345678-1234-1234-1234-123456789abc"
+    rules:
+      - "Never change ComponentGuid after initial release"
+      - "Generate unique GUIDs for each component"
+      - "Use separate GUIDs for plugin, assembly, and components"
+
+# Testing Guidelines
+testing:
+  manual:
+    steps:
+      - "Build in Debug mode"
+      - "Launch Autodesk AutoCAD"
+      - "Start Rhino.Inside.AutoCAD"
+      - "Open Grasshopper"
+      - "Find component in specified Category/Subcategory"
+      - "Test with an AutoCAD drawing containing relevant entities"
+
+  debugging:
+    method: "Attach to Process"
+    target: "acad.exe"
+    ide_support:
+      - Visual Studio 2022
+      - JetBrains Rider
+
+# Distribution
+distribution:
+  methods:
+    - name: "Food4Rhino"
+      url: "https://www.food4rhino.com/"
+      notes: "Community plugin marketplace"
+
+    - name: "Direct Download"
+      format: ".zip containing .gha"
+      notes: "Users place in %APPDATA%\\Grasshopper\\Libraries\\"
+
+# Common Pitfalls
+pitfalls:
+  - issue: "ComponentGuid collision"
+    solution: "Always generate new unique GUIDs"
+
+  - issue: "Missing GH_AssemblyInfo"
+    solution: "Create class inheriting GH_AssemblyInfo"
+
+  - issue: "AutoCAD.NET version mismatch"
+    solution: "Match AutoCAD.NET NuGet package version to your target AutoCAD year (e.g., 24.0.0 for AutoCAD 2024)"
+
+  - issue: "NullReferenceException accessing MdiActiveDocument"
+    solution: "Ensure Grasshopper is running inside AutoCAD via Rhino.Inside.AutoCAD, not standalone Rhino"
+
+  - issue: "Transaction not disposed"
+    solution: "Always wrap AutoCAD database operations in a using(Transaction) block and call Commit()"
+
+  - issue: "Runtime assembly conflicts"
+    solution: "Set ExcludeAssets=runtime on all NuGet package references"
+
+  - issue: "ObjectDisposedException on AutoCAD objects"
+    solution: "Keep AutoCAD object access within the transaction scope. Do not store AutoCAD objects across SolveInstance calls."
+
+  - issue: "GHA not loading"
+    solution: "Check target framework is net48. Verify assembly references match AutoCAD version."
+
+# Related Specs
+related_specs:
+  - grasshopper1
+  - rhino-inside-revit

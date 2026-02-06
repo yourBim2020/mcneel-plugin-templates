@@ -10,7 +10,7 @@ A multi-platform template repository for developing plugins across the McNeel ec
 | **Grasshopper 2** | Ready | .NET 7 | Next-gen Grasshopper components (Rhino 8/9) |
 | **Rhino Plugin** | Ready | .NET 7 | Native Rhino commands and features |
 | **Rhino.Inside Revit** | Ready | .NET 4.8 | Grasshopper components in Autodesk Revit |
-| Rhino.Inside AutoCAD | Planned | .NET 4.8 | Rhino geometry in AutoCAD |
+| **Rhino.Inside AutoCAD** | Ready | .NET 4.8 / .NET 8 | Grasshopper components in AutoCAD |
 
 ## Quick Start
 
@@ -41,6 +41,9 @@ dotnet run --project tools/Scaffolder -- new rhino MyRhinoPlugin
 
 # Scaffold a new Rhino.Inside Revit plugin
 dotnet run --project tools/Scaffolder -- new rhino-inside-revit MyRIRPlugin
+
+# Scaffold a new Rhino.Inside AutoCAD plugin
+dotnet run --project tools/Scaffolder -- new rhino-inside-autocad MyRIACPlugin
 
 # Or use non-interactive mode with defaults
 dotnet run --project tools/Scaffolder -- new grasshopper1 MyPlugin --interactive false
@@ -80,12 +83,13 @@ mcneel-plugin-templates/
 │   ├── grasshopper2/          # Grasshopper 2 (Rhino 8/9)
 │   ├── rhino/                 # Rhino plugin (Rhino 8)
 │   ├── rhino-inside-revit/    # Rhino.Inside Revit
-│   └── rhino-inside-autocad/  # Rhino.Inside AutoCAD (planned)
+│   └── rhino-inside-autocad/  # Rhino.Inside AutoCAD
 ├── specs/                      # OpenSpec YAML definitions
 │   ├── grasshopper1.yaml      # GH1 platform requirements
 │   ├── grasshopper2.yaml      # GH2 platform requirements
 │   ├── rhino.yaml             # Rhino plugin platform requirements
-│   └── rhino-inside-revit.yaml # Rhino.Inside Revit requirements
+│   ├── rhino-inside-revit.yaml # Rhino.Inside Revit requirements
+│   └── rhino-inside-autocad.yaml # Rhino.Inside AutoCAD requirements
 ├── docs/                       # Documentation
 │   └── getting-started.md     # Setup and usage guide
 └── tools/
